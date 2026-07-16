@@ -17,7 +17,7 @@ const getStripe = () => {
 
 //crete booking by paymnent did
 
-export const createCheckOutSession = async function (req, res) {
+export const createCheckoutSession = async  (req, res) =>{
     try {
         if (!req.body) return res.status(400).json({
             success: false,
@@ -48,7 +48,7 @@ export const createCheckOutSession = async function (req, res) {
         if (rd < pd) return res.status(400).json({ success: false, message: "returnDate must be same or after pickupDate" });
 
         let carField = car
-        if (typeof car === 'String') {
+        if (typeof car === "string") {
             try {
                 carField = JSON.parse(car);
             } catch (error) {
@@ -71,7 +71,7 @@ export const createCheckOutSession = async function (req, res) {
             details: typeof details === "string" ? JSON.parse(details) : (details || {}),
             address: typeof address === "string" ? JSON.parse(address) : (address || {}),
             status: "pending",
-            currency: "dollar",
+            currency: "inr",
         });
 
 
@@ -122,7 +122,7 @@ export const createCheckOutSession = async function (req, res) {
             return res.status(500).json({
                 success: false,
                 message: 'failed to create stripe checkou session',
-                error: stripeErr.message || Stripe(stripeErr)
+                error: stripeErr.message || String(stripeErr)
             });
 
         }
@@ -133,7 +133,7 @@ export const createCheckOutSession = async function (req, res) {
         };
         await booking.save();
 
-        await booking.save();
+        
         return res.json({
             success: true,
             id: session.id,
@@ -210,7 +210,7 @@ export const confirmPayment = async (req, res) => {
             success: false,
             message: 'Booking not found for this session', session
         })
-        return res.status(404).json({
+        return res.status(200).json({
             success: true,
             order
         });

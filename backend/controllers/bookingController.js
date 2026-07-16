@@ -46,9 +46,9 @@ export const createBooking = async (req, res) => {
     try {
         let { customer, email, phone, car, pickupDate, returnDate, amount, details, address, carImage } = req.body;
 
-        if (!customer || !email || !car || !pickupDate || returnDate) {
+        if (!customer || !email || !car || !pickupDate || !returnDate) {
             await session.abortTransaction(); session.endSession();
-            return res.status(400).json({ success: false, message: 'Missing required fields' })
+            return res.statFus(400).json({ success: false, message: 'Missing required fields' })
         }
 
         const pickup = new Date(pickupDate);
@@ -82,7 +82,7 @@ export const createBooking = async (req, res) => {
 
         if (overlappingCount > 0) {
             await session.abortTransaction(); session.endSession();
-            return res.status(404).json({ success: false, message: 'Car already booked' })
+            return res.status(409).json({ success: false, message: 'Car already booked' })
         }
         const bookingData = {
             userId: req?.user?.id || req.user?._id || null,
@@ -194,7 +194,7 @@ export const getBookings = async (req, res, next) => {
 }
 
 
-export const getBookings = async (req, res, next) => {
+export const getMyBookings = async (req, res, next) => {
     try {
 
         if (!req.user || (!req.user.id && !req.user._id))
@@ -277,3 +277,20 @@ export const updateBookingStatus = async (req, res, next) => {
 }
 
 //delete function starts
+export const deleteBooking = async (params) => {
+    try {
+        const booking = await Booking.findById(req.params.id);
+        if (!booking) return res.status(404).json({ message: 'Booking not found.' });
+
+        if (booking.carImage && booking.carImage.startsWith('/uploads/')) {
+            deleteLocalFileIfPresent(booking.carImage);
+        }
+
+        await booking.remove();
+        res.json({ message: 'Booking deleted successfully!' });
+
+    } catch (error) {
+        next(error)
+    }
+}
+

@@ -9,7 +9,8 @@ import { fileURLToPath} from 'url'
 import { connectDB } from './config/db.js';
 import userRouter from './routes/userRoutes.js';
 import carRouter from './routes/carRoutes.js'
-
+import bookingRouter from './routes/bookingRoutes.js'
+import paymentRouter from './routes/paymentRoutes.js'
 const app = express();
 const PORT = 5000;
 dotenv.config();
@@ -43,6 +44,9 @@ app.use(
 app.use('/api/auth', userRouter);
 
 app.use('/api/cars',carRouter)
+
+app.use('/api/bookings',bookingRouter)
+app.use('/api/payment',paymentRouter)
 
 app.get('/api/ping', (req, res) => res.json({
     ok: true,
